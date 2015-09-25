@@ -129,15 +129,14 @@ if (current_steps == CURRENT_AVERAGING_STEPS)
 
 //compute averages
 for (i = FL; i <= RR; i++)
-  {
+{
   average = 0;
   for (j = 0; j < CURRENT_AVERAGING_STEPS; j++)
   {
     average = average + raw_current [i][j];
   }
-    average = average / CURRENT_AVERAGING_STEPS;
-    motor_current[i] = average;
-  }
+  motor_current[i] = average / CURRENT_AVERAGING_STEPS;
+}
 
 if (PRINT_CURRENT_MEASUREMENTS)
 {
