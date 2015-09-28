@@ -25,13 +25,17 @@ unsigned long time_lf_up;
 #define IN_RR_UP 12
 #define IN_RR_DWN 13
 
-#define CURRENT_LIMIT 9
+#define CURRENT_LIMIT 7
 #define MAX_RUNNING_TIME   5000
 #define CURRENT_RANGE 20
 #define MV_TO_AMP (CURRENT_RANGE  )/ 2500
 
 RelayStateCmds cmd_up = {1, 0}, cmd_down = { 0,1} , cmd_stop = {0,0};
 RelayPairs fl_relays = {OUT_FL_A, OUT_FL_B}, fr_relays = {OUT_FR_A, OUT_FR_B}, rl_relays = {OUT_RL_A, OUT_RL_B}, rr_relays = {OUT_RR_A, OUT_RR_B};
+char *channel_name[]= {"FLup", "FLdw", "FRup", "FRdw", "RLup", "RLdn", "RRup", "RRdn"};
+
+
+
 
 Command cmd_fl_up = {fl_relays, cmd_up} ,  cmd_fl_down = {fl_relays, cmd_down} ,  cmd_fl_stop = {fl_relays, cmd_stop};
 Command cmd_fr_up = {fr_relays, cmd_up} ,  cmd_fr_down = {fr_relays, cmd_down} ,  cmd_fr_stop = {fr_relays, cmd_stop};
@@ -108,6 +112,8 @@ void loop() {
  ReadInputChannel( RLdown, IN_RL_DWN);
  ReadInputChannel( RRup, IN_RR_UP);
  ReadInputChannel( RRdown, IN_RR_DWN);
+
+
  
  
  ManageConflict (channels[FLup], channels[FLdown], true);
@@ -140,13 +146,13 @@ for (i = FL; i <= RR; i++)
 
 if (PRINT_CURRENT_MEASUREMENTS)
 {
-  Serial.print(     "Current FL: ");
-  Serial.println(     motor_current[FL]);
-  Serial.print(     "Current FR: ");
-  Serial.println(     motor_current[FR]);
-  Serial.print(     "Current RL: ");
-  Serial.println(     motor_current[RL]);
-  Serial.print(     "Current RR: ");
+  Serial.print(     "FL: ");
+  Serial.print(motor_current[FL]);
+  Serial.print(     " FR: ");
+  Serial.print(motor_current[FR]);
+  Serial.print(     " RL: ");
+  Serial.print( motor_current[RL]);
+  Serial.print(     " RR: ");
   Serial.println(     motor_current[RR]);
 }
 
@@ -155,6 +161,7 @@ IdentifyMotorDirections (FLup, FLdown, motor_fl_command);
 IdentifyMotorDirections (FRup, FRdown, motor_fr_command);
 IdentifyMotorDirections (RLup, RLdown, motor_rl_command);
 IdentifyMotorDirections (RRup, RRdown, motor_rr_command);
+
 
 ManageAndControlMotor (FL, motor_fl_command, cmd_fl_stop);
 ManageAndControlMotor (FR, motor_fr_command, cmd_fr_stop);
@@ -184,6 +191,9 @@ void ReadInputChannel (int _channel, int _inputpin)
          //Proper manual command  
          channels[_channel].motion_start_time = millis();
          channels[_channel].motor_mode = MANUAL;
+         Serial.println(_channel);
+         Serial.println(channels[_channel].motion_start_time);
+         
         }              
     }
     else
@@ -222,18 +232,18 @@ void ManageConflict (Channel &pressed_first, Channel & pressed_after, bool _veri
   return;
     
   Channel temp;
-  
+  int has_inverted = 0;
   if (pressed_first.motion_start_time != 0 && pressed_after.motion_start_time != 0 )
   {
-    if (pressed_first.motion_start_time > pressed_after.motion_start_time)
+    if (pressed_first.motion_start_time >= pressed_after.motion_start_time)
     //Inverted order: correct named variables!
     {
       temp = pressed_first;
       pressed_first = pressed_after;
       pressed_after = temp;
+      has_inverted=1;
     } 
   }
-                
   //manage conflict
 if (pressed_first.motor_mode == AUTO)
 
@@ -251,21 +261,21 @@ if (pressed_first.motor_mode == AUTO)
 
    Serial.println ("***** autoconflict : STOP");
    return;
- }
+ }                
+
  
  
   if ((_verify_global_command))
   {
-     if (pressed_first.motor_mode == MANUAL)
-     {      
-       if (pressed_first.motor_direction == UP)
+     if (!has_inverted)
          AllUp();
-         else 
+         else
          AllDown();
+        
       global_command_detected = true;
       time_global = millis();
       return;
-     }    
+         
    } 
 }
 
@@ -537,7 +547,7 @@ void StopMotor(int motor_index)
 void PrintButtonActions()
 {
   
-    if (flupold_mode_old != channels[FLup].motor_mode)
+  if (flupold_mode_old != channels[FLup].motor_mode)
   {
   
   if (channels[FLup].motor_mode == AUTO)
@@ -570,7 +580,7 @@ void PrintButtonActions()
 
  FLdownold_mode_old = channels[FLdown].motor_mode  ;
  
-
+ 
 }
 
 
