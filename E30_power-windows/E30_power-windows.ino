@@ -25,7 +25,7 @@ unsigned long time_lf_up;
 #define IN_RR_UP 12
 #define IN_RR_DWN 13
 
-#define CURRENT_LIMIT 7
+#define CURRENT_LIMIT 7.7
 #define MAX_RUNNING_TIME   5000
 #define CURRENT_RANGE 20
 #define MV_TO_AMP (CURRENT_RANGE  )/ 2500
@@ -191,8 +191,8 @@ void ReadInputChannel (int _channel, int _inputpin)
          //Proper manual command  
          channels[_channel].motion_start_time = millis();
          channels[_channel].motor_mode = MANUAL;
-         Serial.println(_channel);
-         Serial.println(channels[_channel].motion_start_time);
+         //Serial.println(_channel);
+         //Serial.println(channels[_channel].motion_start_time);
          
         }              
     }
@@ -601,7 +601,11 @@ int MotorStopOnCurrentCondition( int motor_index, unsigned long int starttime)
 {
   
   if (( millis() - starttime ) > START_UP_SPIKE_MS && (motor_current[motor_index] >= CURRENT_LIMIT))
+  { 
+    Serial.print("Stop on current: ");
+    Serial.println(motor_current[motor_index]);
       return 1;
+  }
       else return 0;
 }
 
