@@ -25,7 +25,7 @@ unsigned long time_lf_up;
 #define IN_RR_UP 12
 #define IN_RR_DWN 13
 
-#define CURRENT_LIMIT 7.7
+#define CURRENT_LIMIT 8
 #define MAX_RUNNING_TIME   5000
 #define CURRENT_RANGE 20
 #define MV_TO_AMP (CURRENT_RANGE  )/ 2500
