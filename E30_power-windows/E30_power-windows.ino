@@ -26,7 +26,7 @@ unsigned long time_lf_up;
 #define IN_RR_DWN 13
 
 #define CURRENT_LIMIT 8
-#define MAX_RUNNING_TIME   5000
+#define MAX_RUNNING_TIME   12000
 #define CURRENT_RANGE 20
 #define MV_TO_AMP (CURRENT_RANGE  )/ 2500
 
@@ -120,8 +120,7 @@ void loop() {
  ManageConflict (channels[FRup], channels[FRdown], false);
  ManageConflict (channels[RLup], channels[RLdown], false);
  ManageConflict (channels[RRup], channels[RRdown], false);
-
-      
+  
 PrintButtonActions();
 
 // read the analog in values:
@@ -180,6 +179,8 @@ void ReadInputChannel (int _channel, int _inputpin)
   {
     if (input[_channel])
     {
+      Serial.print ("Channel  is pressed: ");
+      Serial.println (_channel);
          if (channels[_channel].motor_mode == AUTO)
         {
           //If already in auto : stop it!
@@ -198,12 +199,15 @@ void ReadInputChannel (int _channel, int _inputpin)
     }
     else
     {
-      if (millis() - channels[_channel].motion_start_time <= 200)
+      if( (millis() - channels[_channel].motion_start_time <= 200) &&
+           (millis() - channels[_channel].motion_start_time >= 60))
       {
        
           channels[_channel].motion_start_time = 0;
           channels[_channel].motor_mode = AUTO;
           channels[_channel].motion_start_time = millis();       
+          Serial.print ("Channel  is auto: ");
+          Serial.println (_channel);
       }
       else if (channels[_channel].motor_mode == AUTO)
       { // keep it as is: needed for allup all down commands
