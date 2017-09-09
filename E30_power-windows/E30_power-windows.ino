@@ -11,10 +11,10 @@ unsigned long time_lf_up;
 #define OUT_FR_B 6
 #define OUT_FL_A 7
 #define OUT_FL_B 9
-#define OUT_RL_A A5
-#define OUT_RL_B A4
-#define OUT_RR_A MISO
-#define OUT_RR_B MOSI
+#define OUT_RL_A A4 //A5
+#define OUT_RL_B A5 //A4
+#define OUT_RR_A MOSI //MISO
+#define OUT_RR_B MISO //MOSI
 
 #define IN_FL_UP 2    // input: white wire
 #define IN_FL_DWN 3   // input: blue wire
