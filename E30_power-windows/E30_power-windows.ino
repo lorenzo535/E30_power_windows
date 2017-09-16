@@ -12,7 +12,7 @@ unsigned long time_lf_up;
 #define OUT_FL_A 7
 #define OUT_FL_B 9
 #define OUT_RL_A A4 //A5
-#define OUT_RL_B A5 //A4
+#define OUT_RL_B 15//A5 //A4
 #define OUT_RR_A MOSI //MISO
 #define OUT_RR_B MISO //MOSI
 
